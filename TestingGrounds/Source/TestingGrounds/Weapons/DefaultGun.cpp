@@ -31,7 +31,6 @@ void ADefaultGun::BeginPlay() {
 }
 
 void ADefaultGun::OnFire() {
-	UE_LOG(LogTemp, Warning, TEXT("FIRE!"));
 	// try and fire a projectile
 	if (ProjectileClass != NULL) {
 		UWorld* const World = GetWorld();

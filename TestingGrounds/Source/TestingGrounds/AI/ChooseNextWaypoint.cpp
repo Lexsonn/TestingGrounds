@@ -12,10 +12,7 @@ EBTNodeResult::Type UChooseNextWaypoint::ExecuteTask(UBehaviorTreeComponent& Own
 	if (!PatrolComponent) return EBTNodeResult::Failed;
 	TArray<AActor*> PatrolPoints = PatrolComponent->GetPatrolPoints();
 
-	if (PatrolPoints.Num() <= 0) {
-		UE_LOG(LogTemp, Warning, TEXT("No Patrol point set for %s"), *AIPawn->GetName());
-		return EBTNodeResult::Failed;
-	}
+	if (PatrolPoints.Num() <= 0) return EBTNodeResult::Failed;
 
 	// Set Next Waypoint
 	auto BlackboardComp = OwnerComp.GetBlackboardComponent();
