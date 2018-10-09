@@ -22,7 +22,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Fire")
-	void OnFire();
+	void PullTrigger();
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,6 +41,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	TSubclassOf<class ADefaultGun> GunBlueprint;
+
+	void SetupGun();
 
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)

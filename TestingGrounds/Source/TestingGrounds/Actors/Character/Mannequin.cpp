@@ -37,13 +37,18 @@ AMannequin::AMannequin() {
 void AMannequin::BeginPlay() {
 	Super::BeginPlay();
 
+	SetupGun();
+}
+
+void AMannequin::SetupGun() {
 	if (!GunBlueprint) return;
 	Gun = GetWorld()->SpawnActor<ADefaultGun>(GunBlueprint);
 	Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	if (!Gun) { UE_LOG(LogTemp, Warning, TEXT("NO GUN")); }
 	Gun->AnimInstance = Mesh1P->GetAnimInstance();
 	// Bind fire event
-	//InputComponent->BindAction("Fire", IE_Pressed, Gun, &ADefaultGun::OnFire);
+	if (!InputComponent) return;
+	InputComponent->BindAction("Fire", IE_Pressed, Gun, &ADefaultGun::OnFire);
 }
 
 // Called to bind functionality to input
@@ -68,7 +73,7 @@ void AMannequin::SetupPlayerInputComponent(class UInputComponent* PlayerInputCom
 	//PlayerInputComponent->BindAxis("LookUpRate", this, &AMannequin::LookUpAtRate);
 }
 
-void AMannequin::OnFire() {
+void AMannequin::PullTrigger() {
 	if (!Gun) return;
 	Gun->OnFire();
 }
