@@ -21,7 +21,7 @@ ADefaultGun::ADefaultGun() {
 	MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	MuzzleLocation->SetupAttachment(FP_Gun);
 	MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
-
+	MuzzleLocation->SetRelativeRotation(FRotator(5.f, 93.f, 0.f));
 }
 
 // Called when the game starts or when spawned
@@ -53,10 +53,10 @@ void ADefaultGun::OnFire() {
 	}
 	
 	// try and play a firing animation if specified
-	if (FireAnimation != NULL) {
-	// Get the animation object for the arms mesh
-		if (AnimInstance != NULL) {
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
+	if (FireAnimation1P != NULL && AnimInstance1P != NULL) {
+		AnimInstance1P->Montage_Play(FireAnimation1P, 1.f);
+	}
+	if (FireAnimation3P != NULL && AnimInstance3P != NULL) {
+		AnimInstance3P->Montage_Play(FireAnimation3P, 1.f);
 	}
 }

@@ -43,12 +43,17 @@ void AMannequin::BeginPlay() {
 void AMannequin::SetupGun() {
 	if (!GunBlueprint) return;
 	Gun = GetWorld()->SpawnActor<ADefaultGun>(GunBlueprint);
-	Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-	if (!Gun) { UE_LOG(LogTemp, Warning, TEXT("NO GUN")); }
-	Gun->AnimInstance = Mesh1P->GetAnimInstance();
-	// Bind fire event
-	if (!InputComponent) return;
-	InputComponent->BindAction("Fire", IE_Pressed, Gun, &ADefaultGun::OnFire);
+	if (IsPlayerControlled()) {
+		Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		// Bind fire event
+		if (!InputComponent) return;
+		InputComponent->BindAction("Fire", IE_Pressed, Gun, &ADefaultGun::OnFire);
+	} else {
+		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	}
+
+	Gun->AnimInstance1P = Mesh1P->GetAnimInstance();
+	Gun->AnimInstance3P = GetMesh()->GetAnimInstance();
 }
 
 // Called to bind functionality to input
@@ -71,6 +76,13 @@ void AMannequin::SetupPlayerInputComponent(class UInputComponent* PlayerInputCom
 	//PlayerInputComponent->BindAxis("TurnRate", this, &AMannequin::TurnAtRate);
 	//PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	//PlayerInputComponent->BindAxis("LookUpRate", this, &AMannequin::LookUpAtRate);
+}
+
+void AMannequin::UnPossessed() {
+	Super::UnPossessed();
+
+	if (!Gun) return;
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 }
 
 void AMannequin::PullTrigger() {
