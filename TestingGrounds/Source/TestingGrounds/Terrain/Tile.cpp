@@ -17,6 +17,7 @@ ATile::ATile() {
 // Called when the game starts or when spawned
 void ATile::BeginPlay() {
 	Super::BeginPlay();
+
 }
 
 bool ATile::CanSpawnAtLocation(FVector Location, float Radius) {
