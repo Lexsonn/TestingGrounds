@@ -2,8 +2,13 @@
 
 #include "InfiniteTerrainGameMode.h"
 #include "NavMeshBoundsVolume.h"
+#include "Actors/ActorPool.h"
 #include "EngineUtils.h"
 
+
+AInfiniteTerrainGameMode::AInfiniteTerrainGameMode() {
+	NavMeshBoundsVolumePool = CreateDefaultSubobject<UActorPool>(FName("Nav Mesh Bounds Volume Pool"));
+}
 
 void AInfiniteTerrainGameMode::PopulateBoundsVolumePool() {
 
@@ -15,5 +20,5 @@ void AInfiniteTerrainGameMode::PopulateBoundsVolumePool() {
 }
 
 void AInfiniteTerrainGameMode::AddToPool(ANavMeshBoundsVolume * ToAdd) {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *ToAdd->GetName());
+	NavMeshBoundsVolumePool->Add(ToAdd);
 }
