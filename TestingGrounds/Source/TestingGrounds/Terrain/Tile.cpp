@@ -70,7 +70,8 @@ bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius, int32 ZOffset)
 	return false;
 }
 
-void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FSpawnPosition Position) {
+template<class T>
+void ATile::PlaceActor(TSubclassOf<T> ToSpawn, FSpawnPosition Position) {
 	AActor * Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn);
 	Spawned->SetActorRelativeLocation(Position.Location);
 	Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
@@ -78,8 +79,17 @@ void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FSpawnPosition Position) {
 	Spawned->SetActorScale3D(FVector(Position.Scale));
 }
 
-TArray<FSpawnPosition> ATile::GenerateRandomSpawnPositions(FSpawnParameters Parameters) {
-	TArray<FSpawnPosition> SpawnPositions;
+template<>
+void ATile::PlaceActor(TSubclassOf<APawn> ToSpawn, FSpawnPosition Position) {
+	APawn* Pawn = GetWorld()->SpawnActor<APawn>(ToSpawn);
+	Pawn->SetActorRelativeLocation(Position.Location);
+	Pawn->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+	Pawn->SpawnDefaultController();
+	Pawn->Tags.Add(FName("Enemy"));
+}
+
+template<class T>
+void ATile::RandomlyPlaceActors(TSubclassOf<T> ToSpawn, FSpawnParameters Parameters) {
 	int32 NumToSpawn = FMath::RandRange(Parameters.MinSpawn, Parameters.MaxSpawn);
 	for (int i = 0; i < NumToSpawn; i++) {
 		FSpawnPosition Position;
@@ -87,19 +97,22 @@ TArray<FSpawnPosition> ATile::GenerateRandomSpawnPositions(FSpawnParameters Para
 		Position.Scale = FMath::RandRange(Parameters.MinScale, Parameters.MaxScale);
 		if (FindEmptyLocation(OUT Position.Location, Parameters.Radius * Parameters.MaxScale, Parameters.ZOffset * Position.Scale)) {
 			Position.Location = Position.Location + FVector(0, 0, Parameters.ZOffset) * Position.Scale;
-			SpawnPositions.Add(Position);
+			PlaceActor(ToSpawn, Position);
 		}
 		// UE_LOG(LogTemp, Warning, TEXT("Random point: %s"), *Spawnpoint.ToCompactString());
 	}
-	return SpawnPositions;
 }
 
 void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, FSpawnParameters Parameters) {
 	if (!ToSpawn) return;
-	auto SpawnPositions = GenerateRandomSpawnPositions(Parameters);
-	for (auto Position : SpawnPositions) {
-		PlaceActor(ToSpawn, Position);
-	}
+	RandomlyPlaceActors(ToSpawn, Parameters);
+}
+
+void ATile::PlaceAIPawn(TSubclassOf<APawn> ToSpawn, FSpawnParameters Parameters) {
+	if (!ToSpawn) return;
+	Parameters.MinScale = 1;
+	Parameters.MaxScale = 1;
+	RandomlyPlaceActors(ToSpawn, Parameters);
 }
 
 void ATile::EndPlay(const EEndPlayReason::Type EndPlayReason) {

@@ -32,8 +32,7 @@ struct FSpawnPosition {
 };
 
 UCLASS()
-class TESTINGGROUNDS_API ATile : public AActor
-{
+class TESTINGGROUNDS_API ATile : public AActor {
 	GENERATED_BODY()
 	
 public:	
@@ -44,8 +43,10 @@ public:
 	void PlaceActors(TSubclassOf<AActor> ToSpawn, FSpawnParameters Parameters);
 
 	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetPool(UActorPool* PoolToSet);
+	void PlaceAIPawn(TSubclassOf<APawn> ToSpawn, FSpawnParameters Parameters);
 
+	UFUNCTION(BlueprintCallable, Category = Setup)
+	void SetPool(UActorPool* PoolToSet);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = Setup) FVector NavigationBoundsOffset;
@@ -64,6 +65,6 @@ private:
 	void PositionNavMeshBoundsVolume();
 	bool CanSpawnAtLocation(FVector Location, float Radius);
 	bool FindEmptyLocation(FVector& OutLocation, float Radius, int32 ZOffset);
-	TArray<FSpawnPosition> GenerateRandomSpawnPositions(FSpawnParameters Parameters);
-	void PlaceActor(TSubclassOf<AActor> ToSpawn, FSpawnPosition Position);
+	template<class T> void RandomlyPlaceActors(TSubclassOf<T> ToSpawn, FSpawnParameters Parameters);
+	template<class T> void PlaceActor(TSubclassOf<T> ToSpawn, FSpawnPosition Position);
 };
