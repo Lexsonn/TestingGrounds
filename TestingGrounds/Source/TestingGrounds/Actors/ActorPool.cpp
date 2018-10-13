@@ -24,6 +24,5 @@ AActor * UActorPool::Checkout() {
 }
 
 void UActorPool::Return(AActor * ActorToReturn) {
-	if (!ActorToReturn) return;
 	Add(ActorToReturn);
 }
